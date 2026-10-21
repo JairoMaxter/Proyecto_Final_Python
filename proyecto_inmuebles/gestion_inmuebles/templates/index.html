@@ -1,0 +1,212 @@
+{% extends 'base.html' %}
+
+{% block title %}Catálogo de Inmuebles - Inmuebles Chile{% endblock %}
+
+{% block content %}
+<!-- Barra de Búsqueda Superior con Región y Comunas Dinámicas -->
+<div class="bg-white border-bottom shadow-sm py-3 mb-4">
+  <div class="container">
+    <form method="get" action="{% url 'gestion_inmuebles:index' %}" class="row g-3 align-items-center">
+      
+      <!-- 1. Búsqueda general -->
+      <div class="col-md-4">
+        <div class="input-group">
+          <span class="input-group-text bg-light border-end-0"><i class="bi bi-search text-muted"></i></span>
+          <input type="text" name="q" value="{{ busqueda_actual }}" class="form-control bg-light border-start-0" placeholder="Nombre o dirección...">
+        </div>
+      </div>
+
+      <!-- 2. Selector de Región -->
+      <div class="col-md-4">
+        <select name="region" id="regionSelect" class="form-select bg-light">
+          <option value="">Todas las regiones</option>
+          {% for r in regiones %}
+            <option value="{{ r.id }}" {% if region_seleccionada == r.id|stringformat:"s" %}selected{% endif %}>
+              {{ r.nombre }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <!-- 3. Selector de Comuna (Dependiente de la Región) -->
+      <div class="col-md-4">
+        <select name="comuna" id="comunaSelect" class="form-select bg-light">
+          <option value="">Todas las comunas</option>
+          {% for c in comunas %}
+            <option value="{{ c.id }}" data-region="{{ c.region.id }}" {% if comuna_seleccionada == c.id|stringformat:"s" %}selected{% endif %}>
+              {{ c.nombre }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <!-- 4. Selector de Tipo de Inmueble -->
+      <div class="col-md-6">
+        <select name="tipo" class="form-select bg-light">
+          <option value="">Todos los tipos de inmueble</option>
+          {% for t in tipos_inmueble %}
+            <option value="{{ t.id }}" {% if tipo_seleccionado == t.id|stringformat:"s" %}selected{% endif %}>
+              {{ t.nombre }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <!-- 5. Botón Aplicar Filtros -->
+      <div class="col-md-6 d-grid">
+        <button type="submit" class="btn btn-dark fw-bold">
+          <i class="bi bi-funnel-fill me-1"></i> Aplicar Filtros de Búsqueda
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="container mb-5">
+  
+  <!-- Barra secundaria de filtros rápidos (Habitaciones y Orden) -->
+  <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-2 border-bottom">
+    <div class="d-flex flex-wrap gap-2 align-items-center">
+      <span class="text-muted small fw-bold me-2"><i class="bi bi-sliders"></i> Habitaciones:</span>
+      
+      <a href="?habitaciones=1{% if region_seleccionada %}&region={{ region_seleccionada }}{% endif %}{% if comuna_seleccionada %}&comuna={{ comuna_seleccionada }}{% endif %}{% if tipo_seleccionado %}&tipo={{ tipo_seleccionado }}{% endif %}" class="btn btn-outline-secondary btn-sm rounded-pill {% if habitaciones_seleccionadas == '1' %}active{% endif %}">
+        1 Dormitorio
+      </a>
+      <a href="?habitaciones=2{% if region_seleccionada %}&region={{ region_seleccionada }}{% endif %}{% if comuna_seleccionada %}&comuna={{ comuna_seleccionada }}{% endif %}{% if tipo_seleccionado %}&tipo={{ tipo_seleccionado }}{% endif %}" class="btn btn-outline-secondary btn-sm rounded-pill {% if habitaciones_seleccionadas == '2' %}active{% endif %}">
+        2 Dormitorios
+      </a>
+      <a href="?habitaciones=3{% if region_seleccionada %}&region={{ region_seleccionada }}{% endif %}{% if comuna_seleccionada %}&comuna={{ comuna_seleccionada }}{% endif %}{% if tipo_seleccionado %}&tipo={{ tipo_seleccionado }}{% endif %}" class="btn btn-outline-secondary btn-sm rounded-pill {% if habitaciones_seleccionadas == '3' %}active{% endif %}">
+        3+ Dormitorios
+      </a>
+
+      {% if busqueda_actual or region_seleccionada or comuna_seleccionada or tipo_seleccionado or habitaciones_seleccionadas %}
+        <a href="{% url 'gestion_inmuebles:index' %}" class="btn btn-link text-danger btn-sm text-decoration-none ms-2">
+          <i class="bi bi-x-circle"></i> Limpiar filtros
+        </a>
+      {% endif %}
+    </div>
+
+    <!-- Ordenamiento -->
+    <div class="mt-2 mt-md-0">
+      <form method="get" class="d-inline-block">
+        {% if busqueda_actual %}<input type="hidden" name="q" value="{{ busqueda_actual }}">{% endif %}
+        {% if region_seleccionada %}<input type="hidden" name="region" value="{{ region_seleccionada }}">{% endif %}
+        {% if comuna_seleccionada %}<input type="hidden" name="comuna" value="{{ comuna_seleccionada }}">{% endif %}
+        {% if tipo_seleccionado %}<input type="hidden" name="tipo" value="{{ tipo_seleccionado }}">{% endif %}
+        {% if habitaciones_seleccionadas %}<input type="hidden" name="habitaciones" value="{{ habitaciones_seleccionadas }}">{% endif %}
+        
+        <select name="orden" onchange="this.form.submit()" class="form-select form-select-sm bg-light">
+          <option value="">Ordenar por: Más recientes</option>
+          <option value="precio_asc" {% if orden_seleccionado == 'precio_asc' %}selected{% endif %}>Precio: Menor a Mayor</option>
+          <option value="precio_desc" {% if orden_seleccionado == 'precio_desc' %}selected{% endif %}>Precio: Mayor a Menor</option>
+        </select>
+      </form>
+    </div>
+  </div>
+
+  <p class="text-muted small mb-4">Se encontraron <strong>{{ inmuebles.count }}</strong> unidades disponibles</p>
+
+  <!-- Grilla de Inmuebles -->
+  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    {% for inmueble in inmuebles %}
+      <div class="col">
+        <div class="card h-100 shadow-sm border-0 rounded-4 overflow-hidden position-relative bg-white">
+          
+          <div class="position-absolute top-0 start-0 p-3 z-1 w-100 d-flex justify-content-between align-items-center pointer-events-none">
+            <div>
+              <span class="badge bg-success bg-opacity-75 px-2 py-1 small fw-semibold shadow-sm">
+                <i class="bi bi-tag-fill me-1"></i> Precio Fijo
+              </span>
+              <span class="badge bg-warning text-dark px-2 py-1 small fw-semibold shadow-sm ms-1">
+                {{ inmueble.tipo_inmueble.nombre }}
+              </span>
+            </div>
+          </div>
+
+          <div class="bg-dark text-white d-flex align-items-center justify-content-center" style="height: 200px; background: linear-gradient(135deg, #2c3e50, #34495e);">
+            <div class="text-center px-3">
+              <i class="bi bi-house-heart display-4 text-warning mb-1"></i>
+              <p class="small text-muted mb-0">Inmuebles Chile</p>
+            </div>
+          </div>
+
+          <div class="card-body p-4 d-flex flex-column">
+            <span class="text-muted small text-uppercase fw-bold mb-1">Desde</span>
+            <h3 class="fw-bold text-dark mb-1">${{ inmueble.precio_mensual|floatformat:0 }} <span class="fs-6 fw-normal text-muted">/ mes</span></h3>
+            
+            <h5 class="card-title fw-bold text-primary mb-1 text-truncate">{{ inmueble.nombre }}</h5>
+            <p class="card-text text-muted small mb-3">
+              <i class="bi bi-geo-alt-fill text-danger me-1"></i> {{ inmueble.direccion }}, {{ inmueble.comuna.nombre }}
+            </p>
+
+            <div class="row g-2 mt-auto pt-3 border-top text-center bg-light rounded-3 p-2 small">
+              <div class="col-4 border-end">
+                <span class="text-muted d-block" style="font-size: 0.75rem;">HABITACIONES</span>
+                <strong class="text-dark"><i class="bi bi-door-open"></i> {{ inmueble.habitaciones }}D</strong>
+              </div>
+              <div class="col-4 border-end">
+                <span class="text-muted d-block" style="font-size: 0.75rem;">BAÑOS</span>
+                <strong class="text-dark"><i class="bi bi-droplet"></i> {{ inmueble.banos }}B</strong>
+              </div>
+              <div class="col-4">
+                <span class="text-muted d-block" style="font-size: 0.75rem;">SUPERFICIE</span>
+                <strong class="text-dark"><i class="bi bi-rulers"></i> {{ inmueble.m2_construidos|floatformat:0 }} m²</strong>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="card-footer bg-white border-top-0 p-3 pt-0">
+            <a href="{% url 'gestion_inmuebles:detalle_inmueble' inmueble.pk %}" class="btn btn-dark w-100 fw-bold rounded-pill">
+              Ver Detalles y Solicitar <i class="bi bi-arrow-right ms-1"></i>
+            </a>
+          </div>
+
+        </div>
+      </div>
+    {% empty %}
+      <div class="col-12 text-center py-5">
+        <div class="p-5 bg-white rounded-4 shadow-sm border">
+          <i class="bi bi-search display-1 text-muted mb-3"></i>
+          <h4 class="fw-bold text-dark">No se encontraron inmuebles</h4>
+          <p class="text-muted">Prueba cambiando los filtros de región, comuna o tipo de propiedad.</p>
+          <a href="{% url 'gestion_inmuebles:index' %}" class="btn btn-warning fw-bold mt-2">Ver todas las propiedades</a>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+</div>
+
+<!-- Script JavaScript para filtrado dinámico de Comunas al cambiar la Región -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const regionSelect = document.getElementById('regionSelect');
+    const comunaSelect = document.getElementById('comunaSelect');
+    
+    // Guardamos todas las opciones originales de comunas la primera vez
+    const allComunaOptions = Array.from(comunaSelect.options);
+
+    regionSelect.addEventListener('change', function() {
+      const selectedRegionId = this.value;
+
+      // Limpiamos la comuna seleccionada si no corresponde a la nueva región
+      const currentOpt = comunaSelect.options[comunaSelect.selectedIndex];
+      if (currentOpt && currentOpt.dataset.region && currentOpt.dataset.region !== selectedRegionId) {
+        comunaSelect.value = "";
+      }
+
+      // Vaciamos el select de comunas y colocamos la opción por defecto
+      comunaSelect.innerHTML = '<option value="">Todas las comunas</option>';
+
+      // Filtramos y agregamos solo las comunas que pertenecen a la región seleccionada
+      allComunaOptions.forEach(opt => {
+        if (opt.value === "") return; // Omitir la opción predeterminada
+        if (!selectedRegionId || opt.dataset.region === selectedRegionId) {
+          comunaSelect.appendChild(opt);
+        }
+      });
+    });
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,18 @@
+[
+  {"model": "gestion_inmuebles.region", "pk": 1, "fields": {"cod": "15", "nombre": "Arica y Parinacota"}},
+  {"model": "gestion_inmuebles.region", "pk": 2, "fields": {"cod": "01", "nombre": "Tarapacá"}},
+  {"model": "gestion_inmuebles.region", "pk": 3, "fields": {"cod": "02", "nombre": "Antofagasta"}},
+  {"model": "gestion_inmuebles.region", "pk": 4, "fields": {"cod": "03", "nombre": "Atacama"}},
+  {"model": "gestion_inmuebles.region", "pk": 5, "fields": {"cod": "04", "nombre": "Coquimbo"}},
+  {"model": "gestion_inmuebles.region", "pk": 6, "fields": {"cod": "05", "nombre": "Valparaíso"}},
+  {"model": "gestion_inmuebles.region", "pk": 7, "fields": {"cod": "06", "nombre": "Región del Libertador Gral. Bernardo O’Higgins"}},
+  {"model": "gestion_inmuebles.region", "pk": 8, "fields": {"cod": "07", "nombre": "Región del Maule"}},
+  {"model": "gestion_inmuebles.region", "pk": 9, "fields": {"cod": "16", "nombre": "Región de Ñuble"}},
+  {"model": "gestion_inmuebles.region", "pk": 10, "fields": {"cod": "08", "nombre": "Región del Biobío"}},
+  {"model": "gestion_inmuebles.region", "pk": 11, "fields": {"cod": "09", "nombre": "Región de la Araucanía"}},
+  {"model": "gestion_inmuebles.region", "pk": 12, "fields": {"cod": "14", "nombre": "Región de Los Ríos"}},
+  {"model": "gestion_inmuebles.region", "pk": 13, "fields": {"cod": "10", "nombre": "Región de Los Lagos"}},
+  {"model": "gestion_inmuebles.region", "pk": 14, "fields": {"cod": "11", "nombre": "Región Aisén del Gral. Carlos Ibáñez del Campo"}},
+  {"model": "gestion_inmuebles.region", "pk": 15, "fields": {"cod": "12", "nombre": "Región de Magallanes y de la Antártica Chilena"}},
+  {"model": "gestion_inmuebles.region", "pk": 16, "fields": {"cod": "13", "nombre": "Región Metropolitana de Santiago"}}
+]

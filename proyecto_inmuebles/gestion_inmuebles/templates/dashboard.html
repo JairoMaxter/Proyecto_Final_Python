@@ -1,0 +1,267 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container my-5">
+
+    <!-- ========== ENCABEZADO DEL PANEL ========== -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <div>
+            <h1 class="h2 mb-1">{% if es_arrendador %}Panel de arrendador{% else %}Mis solicitudes{% endif %}</h1>
+            <p class="text-muted mb-0">Hola, {{ user.first_name|default:user.username }}.</p>
+        </div>
+        {% if es_arrendador %}
+        <a href="{% url 'gestion_inmuebles:crear_inmueble' %}" class="btn btn-primary">
+            <i class="fas fa-plus" aria-hidden="true"></i> Publicar inmueble
+        </a>
+        {% endif %}
+    </div>
+
+    {% if es_arrendador %}
+
+    <!-- ========== AVISO DE SOLICITUDES PENDIENTES ========== -->
+    {% if solicitudes_pendientes %}
+    <div class="alert alert-info d-flex flex-wrap justify-content-between align-items-center gap-2" role="status">
+        <span>
+            Tienes {{ solicitudes_pendientes }} solicitud{{ solicitudes_pendientes|pluralize:"es" }}
+            pendiente{{ solicitudes_pendientes|pluralize }} por responder.
+        </span>
+        <a href="#solicitudes" class="alert-link">Ver solicitudes</a>
+    </div>
+    {% endif %}
+
+    <!-- ========== SECCIÓN: INMUEBLES PUBLICADOS ========== -->
+    <section id="inmuebles" class="mb-5" aria-labelledby="titulo-inmuebles">
+        <h2 class="h4 mb-3" id="titulo-inmuebles">Inmuebles publicados</h2>
+
+        {% if mis_inmuebles %}
+        <div class="card border-0 shadow-sm">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th scope="col">Inmueble</th>
+                            <th scope="col">Tipo</th>
+                            <th scope="col" class="text-end">Precio mensual</th>
+                            <th scope="col">Estado</th>
+                            <th scope="col" class="text-center">Solicitudes</th>
+                            <th scope="col" class="text-end">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for inmueble in mis_inmuebles %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'gestion_inmuebles:detalle_inmueble' inmueble.pk %}"
+                                   class="fw-semibold text-decoration-none">{{ inmueble.nombre }}</a>
+                                <div class="text-muted small">{{ inmueble.direccion }}, {{ inmueble.comuna.nombre }}</div>
+                            </td>
+                            <td>{{ inmueble.tipo_inmueble.nombre }}</td>
+                            <td class="text-end text-nowrap">${{ inmueble.precio_mensual|floatformat:"0g" }}</td>
+                            <td>
+                                {% if inmueble.disponible %}
+                                <span class="badge text-bg-success">Disponible</span>
+                                {% else %}
+                                <span class="badge text-bg-secondary">No disponible</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
+                                {{ inmueble.total_solicitudes }}
+                                {% if inmueble.solicitudes_pendientes %}
+                                <span class="badge text-bg-warning ms-1">
+                                    {{ inmueble.solicitudes_pendientes }} pendiente{{ inmueble.solicitudes_pendientes|pluralize }}
+                                </span>
+                                {% endif %}
+                            </td>
+                            <td class="text-end text-nowrap">
+                                <a href="{% url 'gestion_inmuebles:editar_inmueble' inmueble.pk %}"
+                                   class="btn btn-sm btn-outline-secondary"
+                                   aria-label="Editar {{ inmueble.nombre }}">
+                                    <i class="fas fa-pen" aria-hidden="true"></i> Editar
+                                </a>
+                                <!-- Abre el modal; sin JavaScript el enlace lleva a la página de confirmación -->
+                                <a href="{% url 'gestion_inmuebles:eliminar_inmueble' inmueble.pk %}"
+                                   class="btn btn-sm btn-outline-danger"
+                                   data-bs-toggle="modal" data-bs-target="#modalEliminar"
+                                   data-nombre="{{ inmueble.nombre }}"
+                                   aria-label="Eliminar {{ inmueble.nombre }}">
+                                    <i class="fas fa-trash" aria-hidden="true"></i> Eliminar
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% else %}
+        <div class="card border-0 shadow-sm text-center p-5">
+            <h3 class="h5">Aún no has publicado inmuebles</h3>
+            <p class="text-muted">Publica tu primera propiedad para empezar a recibir solicitudes de arriendo.</p>
+            <div>
+                <a href="{% url 'gestion_inmuebles:crear_inmueble' %}" class="btn btn-primary">Publicar inmueble</a>
+            </div>
+        </div>
+        {% endif %}
+    </section>
+
+    <!-- ========== SECCIÓN: SOLICITUDES RECIBIDAS ========== -->
+    <section id="solicitudes" aria-labelledby="titulo-solicitudes">
+        <h2 class="h4 mb-3" id="titulo-solicitudes">Solicitudes recibidas</h2>
+
+        {% if solicitudes %}
+        <div class="card border-0 shadow-sm">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th scope="col">Inmueble</th>
+                            <th scope="col">Arrendatario</th>
+                            <th scope="col">Mensaje</th>
+                            <th scope="col">Fecha</th>
+                            <th scope="col">Estado</th>
+                            <th scope="col" class="text-end">Responder</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for solicitud in solicitudes %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'gestion_inmuebles:detalle_inmueble' solicitud.inmueble.pk %}"
+                                   class="text-decoration-none">{{ solicitud.inmueble.nombre }}</a>
+                            </td>
+                            <td>
+                                {{ solicitud.arrendatario.get_full_name|default:solicitud.arrendatario.username }}
+                                <div class="text-muted small">{{ solicitud.arrendatario.email }}</div>
+                            </td>
+                            <td class="small text-break" style="min-width: 14rem; max-width: 22rem;">
+                                {% if solicitud.mensaje %}{{ solicitud.mensaje }}{% else %}<span class="text-muted">Sin mensaje</span>{% endif %}
+                            </td>
+                            <td class="text-nowrap">{{ solicitud.fecha_solicitud|date:"d/m/Y" }}</td>
+                            <td>
+                                <span class="badge {% if solicitud.estado == 'aceptada' %}text-bg-success{% elif solicitud.estado == 'rechazada' %}text-bg-danger{% else %}text-bg-warning{% endif %}">
+                                    {{ solicitud.get_estado_display }}
+                                </span>
+                            </td>
+                            <td class="text-end text-nowrap">
+                                {% if solicitud.estado == 'pendiente' %}
+                                <!-- Cada respuesta es un POST con CSRF: un enlace GET no debe cambiar datos -->
+                                <form action="{% url 'gestion_inmuebles:responder_solicitud' solicitud.pk 'aceptada' %}"
+                                      method="post" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-success"
+                                            aria-label="Aceptar solicitud de {{ solicitud.arrendatario.get_full_name|default:solicitud.arrendatario.username }}">
+                                        Aceptar
+                                    </button>
+                                </form>
+                                <form action="{% url 'gestion_inmuebles:responder_solicitud' solicitud.pk 'rechazada' %}"
+                                      method="post" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-outline-danger"
+                                            aria-label="Rechazar solicitud de {{ solicitud.arrendatario.get_full_name|default:solicitud.arrendatario.username }}">
+                                        Rechazar
+                                    </button>
+                                </form>
+                                {% else %}
+                                <span class="text-muted small">Respondida</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% else %}
+        <div class="card border-0 shadow-sm text-center p-5">
+            <h3 class="h5">Todavía no recibes solicitudes</h3>
+            <p class="text-muted mb-0">Cuando un arrendatario pida uno de tus inmuebles, aparecerá aquí.</p>
+        </div>
+        {% endif %}
+    </section>
+
+    <!-- ========== MODAL: CONFIRMAR ELIMINACIÓN ========== -->
+    <div class="modal fade" id="modalEliminar" tabindex="-1" aria-labelledby="modalEliminarTitulo" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <form method="post" id="formEliminar" class="modal-content">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h2 class="modal-title fs-5" id="modalEliminarTitulo">Eliminar inmueble</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-2">Vas a eliminar <strong id="modalEliminarNombre"></strong>.</p>
+                    <p class="text-muted small mb-0">
+                        También se borrarán las solicitudes de arriendo asociadas y no podrás deshacerlo.
+                        Si solo quieres dejar de recibir solicitudes, edita el inmueble y desmarca «Disponible».
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-danger">Eliminar inmueble</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ========== SCRIPT: DATOS DEL INMUEBLE EN EL MODAL ========== -->
+    <script>
+        // Bootstrap dispara este evento DOM al abrir el modal; relatedTarget es el botón pulsado.
+        document.getElementById('modalEliminar').addEventListener('show.bs.modal', function (event) {
+            const disparador = event.relatedTarget;
+            document.getElementById('formEliminar').action = disparador.href;
+            document.getElementById('modalEliminarNombre').textContent = disparador.dataset.nombre;
+        });
+    </script>
+
+    {% else %}
+
+    <!-- ========== SECCIÓN: SOLICITUDES ENVIADAS (ARRENDATARIO) ========== -->
+    <section id="mis-solicitudes">
+        {% if mis_solicitudes %}
+        <div class="card border-0 shadow-sm">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th scope="col">Inmueble</th>
+                            <th scope="col" class="text-end">Precio mensual</th>
+                            <th scope="col">Fecha</th>
+                            <th scope="col">Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for solicitud in mis_solicitudes %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'gestion_inmuebles:detalle_inmueble' solicitud.inmueble.pk %}"
+                                   class="fw-semibold text-decoration-none">{{ solicitud.inmueble.nombre }}</a>
+                                <div class="text-muted small">{{ solicitud.inmueble.direccion }}, {{ solicitud.inmueble.comuna.nombre }}</div>
+                            </td>
+                            <td class="text-end text-nowrap">${{ solicitud.inmueble.precio_mensual|floatformat:"0g" }}</td>
+                            <td class="text-nowrap">{{ solicitud.fecha_solicitud|date:"d/m/Y" }}</td>
+                            <td>
+                                <span class="badge {% if solicitud.estado == 'aceptada' %}text-bg-success{% elif solicitud.estado == 'rechazada' %}text-bg-danger{% else %}text-bg-warning{% endif %}">
+                                    {{ solicitud.get_estado_display }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% else %}
+        <div class="card border-0 shadow-sm text-center p-5">
+            <h2 class="h5">Aún no has enviado solicitudes</h2>
+            <p class="text-muted">Explora el catálogo y pide el inmueble que te interese.</p>
+            <div>
+                <a href="{% url 'gestion_inmuebles:index' %}" class="btn btn-primary">Ver catálogo</a>
+            </div>
+        </div>
+        {% endif %}
+    </section>
+
+    {% endif %}
+
+</div>
+{% endblock %}

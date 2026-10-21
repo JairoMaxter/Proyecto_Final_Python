@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container my-5">
+    <!-- Botón de retorno -->
+    <div class="mb-4">
+        <a href="{% url 'gestion_inmuebles:index' %}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left"></i> Volver al catálogo
+        </a>
+    </div>
+
+    <div class="row">
+        <!-- Información principal del inmueble -->
+        <div class="col-lg-8">
+            <h1 class="mb-2">{{ inmueble.nombre }}</h1>
+            <p class="text-muted fs-5">
+                <i class="fas fa-map-marker-alt text-danger"></i> 
+                {{ inmueble.direccion }}, {{ inmueble.comuna.nombre }}, Región {{ inmueble.comuna.region.nombre }}
+            </p>
+
+            <div class="card mb-4 shadow-sm border-0">
+                <div class="card-body">
+                    <h4 class="card-title mb-3">Descripción de la Propiedad</h4>
+                    <p class="card-text text-secondary">{{ inmueble.descripcion }}</p>
+                </div>
+            </div>
+
+            <div class="card mb-4 shadow-sm border-0">
+                <div class="card-body">
+                    <h4 class="card-title mb-3">Características Principales</h4>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>Tipo de Inmueble:</span> <strong>{{ inmueble.tipo_inmueble.nombre }}</strong>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>Habitaciones:</span> <strong>{{ inmueble.habitaciones }}</strong>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>Baños:</span> <strong>{{ inmueble.banos }}</strong>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>Estacionamientos:</span> <strong>{{ inmueble.estacionamientos }}</strong>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>M² Construidos:</span> <strong>{{ inmueble.m2_construidos }} m²</strong>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>M² Totales:</span> <strong>{{ inmueble.m2_totales }} m²</strong>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>Publicado el:</span> <strong>{{ inmueble.fecha_creacion|date:"d/m/Y" }}</strong>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tarjeta lateral de acción (Precio y Solicitud) -->
+        <div class="col-lg-4">
+            <div class="card shadow border-0 sticky-top" style="top: 2rem;">
+                <div class="card-body text-center p-4">
+                    <h3 class="text-primary fw-bold mb-1">${{ inmueble.precio_mensual }}</h3>
+                    <p class="text-muted small mb-4">Precio mensual</p>
+                    
+                    <hr class="text-muted">
+
+                    <div class="text-start mb-4">
+                        <p class="mb-1 text-muted small">Propietario:</p>
+                        <h6 class="mb-0">{{ inmueble.propietario.first_name }} {{ inmueble.propietario.last_name }}</h6>
+                        <p class="text-muted small mb-0"><i class="fas fa-envelope"></i> {{ inmueble.propietario.email }}</p>
+                    </div>
+
+                    <!-- Lógica de permisos para el botón -->
+                    {% if not user.is_authenticated %}
+                        <div class="d-grid gap-2">
+                            <p class="text-muted small mb-2">Debes iniciar sesión para solicitar este inmueble.</p>
+                            <a href="{% url 'gestion_inmuebles:login' %}?next={{ request.path }}" class="btn btn-outline-primary py-2">
+                                Iniciar Sesión
+                            </a>
+                        </div>
+
+                    {% elif es_propietario %}
+                        <div class="alert alert-info small mb-0" role="alert">
+                            Este inmueble es de tu propiedad.
+                        </div>
+
+                    {% elif not es_arrendatario %}
+                        <div class="alert alert-warning small mb-0" role="alert">
+                            Solo las cuentas de tipo arrendatario pueden enviar solicitudes de arriendo.
+                        </div>
+
+                    {% elif not inmueble.disponible %}
+                        <button class="btn btn-secondary w-100 py-2 fw-bold" disabled>
+                            <i class="fas fa-ban"></i> No disponible
+                        </button>
+
+                    {% elif ya_solicitado %}
+                        <button class="btn btn-secondary w-100 py-2 fw-bold" disabled>
+                            <i class="fas fa-check-circle"></i> Solicitud ya enviada
+                        </button>
+
+                    {% else %}
+                        <form action="{% url 'gestion_inmuebles:solicitar_arriendo' inmueble.id %}" method="POST">
+                            {% csrf_token %}
+                            <div class="mb-3 text-start">
+                                <label for="mensaje" class="form-label small text-muted">Mensaje para el propietario (opcional)</label>
+                                <textarea id="mensaje" name="mensaje" class="form-control" rows="3"
+                                        placeholder="Cuéntale al propietario sobre ti..."></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-success w-100 py-2 fw-bold shadow-sm">
+                                <i class="fas fa-paper-plane"></i> Enviar Solicitud de Arriendo
+                            </button>
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

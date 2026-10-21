@@ -1,0 +1,96 @@
+==================================================
+   LISTADO DE INMUEBLES EN ARRIENDO POR REGIÓN   
+==================================================
+
+REGIÓN: ANTOFAGASTA
+==================================================
+  [Comuna: Antofagasta]
+    1. Nombre: Departamento Antofagasta
+       Descripción: Alto estándar, vista despejada a la cordillera.
+
+  [Comuna: María Elena]
+    1. Nombre: Parcela de Agrado María Elena
+       Descripción: Parcela de 5000 m2 con hermosa casa patronal.
+
+  [Comuna: Mejillones]
+    1. Nombre: Oficina Mejillones
+       Descripción: Planta libre sector Pedro de Valdivia.
+
+  [Comuna: Sierra Gorda]
+    1. Nombre: Departamento Sierra Gorda
+       Descripción: Excelente conectividad y vida de barrio.
+
+  [Comuna: Tocopilla]
+    1. Nombre: Casa en Condominio Tocopilla
+       Descripción: Seguridad 24/7 y áreas verdes comunes.
+
+
+REGIÓN: ARICA Y PARINACOTA
+==================================================
+  [Comuna: Arica]
+    1. Nombre: Departamento Central Arica
+       Descripción: Luminoso departamento amoblado en el centro.
+
+  [Comuna: Camarones]
+    1. Nombre: Casa Vista al Mar Camarones
+       Descripción: Hermosa casa frente al sector Cavancha.
+
+  [Comuna: General Lagos]
+    1. Nombre: Bodega Industrial General Lagos
+       Descripción: Amplia bodega apta para acopio minero.
+
+  [Comuna: Putre]
+    1. Nombre: Oficina Comercial Putre
+       Descripción: Oficina ejecutiva sector centro norte.
+
+
+REGIÓN: ATACAMA
+==================================================
+  [Comuna: Alto del Carmen]
+    1. Nombre: Casa Residencial Alto del Carmen
+       Descripción: Hermosa propiedad residencial en zona sur.
+
+  [Comuna: Caldera]
+    1. Nombre: Departamento Caldera
+       Descripción: Cercano a universidades y servicios centrales.
+
+  [Comuna: Chañaral]
+    1. Nombre: Casa Residencial Chañaral
+       Descripción: Barrio tranquilo sector Avenida Alemania.
+
+  [Comuna: Huasco]
+    1. Nombre: Departamento Huasco
+       Descripción: Departamento calefaccionado con termo panel.
+
+
+REGIÓN: TARAPACÁ
+==================================================
+  [Comuna: Alto Hospicio]
+    1. Nombre: Departamento Alto Hospicio
+       Descripción: Depto con piscina y áreas verdes cercano al mar.
+
+  [Comuna: Camiña]
+    1. Nombre: Loft Camiña
+       Descripción: Loft con estilo patrimonial y hermosa vista.
+
+  [Comuna: Colchane]
+    1. Nombre: Departamento Colchane
+       Descripción: A pasos de la playa y comercio principal.
+
+  [Comuna: Huara]
+    1. Nombre: Casa Quinta Huara
+       Descripción: Gran terreno con árboles frutales y tranquilidad.
+
+  [Comuna: Iquique]
+    1. Nombre: Casa Familiar Iquique
+       Descripción: Casa acogedora en sector residencial.
+
+  [Comuna: Pica]
+    1. Nombre: Studio Pica
+       Descripción: Ideal estudiantes, excelente conectividad de Metro.
+
+  [Comuna: Pozo Almonte]
+    1. Nombre: Local Comercial Pozo Almonte
+       Descripción: Excelente vitrina comercial en zona céntrica.
+
+

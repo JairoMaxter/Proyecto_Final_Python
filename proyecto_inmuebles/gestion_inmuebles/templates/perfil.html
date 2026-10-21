@@ -1,0 +1,225 @@
+{% extends 'base.html' %}
+
+{% block title %}Mi Perfil - Inmuebles Chile{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  
+  <!-- Encabezado del Perfil -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="p-4 bg-white rounded-4 shadow-sm border d-flex flex-wrap justify-content-between align-items-center">
+        <div>
+          <h2 class="fw-bold text-dark mb-1">
+            <i class="bi bi-person-circle text-warning me-2"></i> {{ request.user.first_name }} {{ request.user.last_name }}
+          </h2>
+          <p class="text-muted mb-0">Usuario: <strong>@{{ request.user.username }}</strong></p>
+        </div>
+        <div>
+          <span class="badge bg-dark text-warning fs-6 px-3 py-2 text-uppercase">
+            <i class="bi bi-shield-fill-check me-1"></i> {{ perfil.tipo_usuario }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    
+    <!-- Columna Izquierda: Datos Personales y Formulario de Edición -->
+    <div class="col-lg-4">
+      <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+        <h4 class="fw-bold text-dark mb-3"><i class="bi bi-gear-fill me-2 text-primary"></i> Mis Datos</h4>
+        <p class="text-muted small">Actualiza tu información de contacto de manera segura.</p>
+
+        <form method="post">
+          {% csrf_token %}
+          
+          <div class="mb-3">
+            <label class="form-label small fw-bold">Nombre</label>
+            {{ user_form.first_name }}
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-bold">Apellido</label>
+            {{ user_form.last_name }}
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-bold">Correo Electrónico (Obligatorio)</label>
+            {{ user_form.email }}
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-bold">Teléfono de Contacto (Obligatorio)</label>
+            {{ perfil_form.telefono }}
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-bold">Dirección Particular</label>
+            {{ perfil_form.direccion }}
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-bold">RUT</label>
+            <input type="text" class="form-control bg-light" value="{{ perfil.rut }}" disabled>
+          </div>
+
+          <button type="submit" class="btn btn-dark w-100 fw-bold rounded-pill">
+            <i class="bi bi-save me-1"></i> Guardar Cambios
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Columna Derecha: Sección Dinámica según el Rol -->
+    <div class="col-lg-8">
+      
+      {% if perfil.tipo_usuario == 'arrendador' %}
+        
+        <!-- SECCIÓN ARRENDADOR: Mis Publicaciones -->
+        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="fw-bold text-dark mb-0"><i class="bi bi-building me-2 text-warning"></i> Mis Inmuebles Publicados</h4>
+            <a href="{% url 'gestion_inmuebles:crear_inmueble' %}" class="btn btn-warning btn-sm fw-bold">
+              <i class="bi bi-plus-circle me-1"></i> Publicar Nueva
+            </a>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table align-middle">
+              <thead class="table-light">
+                <tr>
+                  <th>Propiedad</th>
+                  <th>Comuna</th>
+                  <th>Precio</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for inmueble in mis_inmuebles %}
+                  <tr>
+                    <td class="fw-bold text-dark">{{ inmueble.nombre }}</td>
+                    <td>{{ inmueble.comuna.nombre }}</td>
+                    <td>${{ inmueble.precio_mensual|floatformat:0 }}</td>
+                    <td>
+                      <a href="{% url 'gestion_inmuebles:detalle_inmueble' inmueble.pk %}" class="btn btn-outline-dark btn-sm rounded-pill">Ver</a>
+                    </td>
+                  </tr>
+                {% empty %}
+                  <tr>
+                    <td colspan="4" class="text-center text-muted py-4">No tienes inmuebles publicados actualmente.</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- SECCIÓN ARRENDADOR: Solicitudes Recibidas -->
+        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+          <h4 class="fw-bold text-dark mb-3"><i class="bi bi-envelope-paper me-2 text-success"></i> Solicitudes de Arriendo Recibidas</h4>
+          
+          <div class="table-responsive">
+            <table class="table align-middle">
+              <thead class="table-light">
+                <tr>
+                  <th>Inmueble</th>
+                  <th>Arrendatario</th>
+                  <th>Mensaje</th>
+                  <th>Estado</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for solicitud in solicitudes_recibidas %}
+                  <tr>
+                    <td class="fw-bold">{{ solicitud.inmueble.nombre }}</td>
+                    <td>{{ solicitud.arrendatario.first_name }} {{ solicitud.arrendatario.last_name }}<br><small class="text-muted">{{ solicitud.arrendatario.email }}</small></td>
+                    <td><small class="text-muted">{{ solicitud.mensaje|default:"Sin mensaje" }}</small></td>
+                    <td>
+                      <span class="badge {% if solicitud.estado == 'aceptada' %}bg-success{% elif solicitud.estado == 'rechazada' %}bg-danger{% else %}bg-warning text-dark{% endif %}">
+                        {{ solicitud.estado|title }}
+                      </span>
+                    </td>
+                    <td>
+                      {% if solicitud.estado == 'pendiente' %}
+                        <div class="btn-group btn-group-sm">
+                          <a href="{% url 'gestion_inmuebles:responder_solicitud' solicitud.pk 'aceptada' %}" class="btn btn-success" title="Aceptar"><i class="bi bi-check-lg"></i></a>
+                          <a href="{% url 'gestion_inmuebles:responder_solicitud' solicitud.pk 'rechazada' %}" class="btn btn-danger" title="Rechazar"><i class="bi bi-x-lg"></i></a>
+                        </div>
+                      {% else %}
+                        <span class="text-muted small">Gestionada</span>
+                      {% endif %}
+                    </td>
+                  </tr>
+                {% empty %}
+                  <tr>
+                    <td colspan="5" class="text-center text-muted py-4">No has recibido solicitudes de arriendo.</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      {% else %}
+        
+        <!-- SECCIÓN ARRENDATARIO: Propiedad Arrendada -->
+        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
+          <h4 class="fw-bold text-dark mb-3"><i class="bi bi-house-heart me-2 text-success"></i> Mi Propiedad Arrendada</h4>
+          
+          {% if propiedad_arrendada %}
+            <div class="p-4 bg-light rounded-4 border">
+              <h5 class="fw-bold text-primary">{{ propiedad_arrendada.inmueble.nombre }}</h5>
+              <p class="text-muted small mb-2"><i class="bi bi-geo-alt-fill text-danger me-1"></i> {{ propiedad_arrendada.inmueble.direccion }}, {{ propiedad_arrendada.inmueble.comuna.nombre }}</p>
+              <h4 class="fw-bold text-dark mb-3">${{ propiedad_arrendada.inmueble.precio_mensual|floatformat:0 }} <span class="fs-6 fw-normal text-muted">/ mes</span></h4>
+              <p class="small text-success fw-bold mb-3"><i class="bi bi-check-circle-fill me-1"></i> Tu solicitud fue aceptada por el propietario.</p>
+              <a href="{% url 'gestion_inmuebles:detalle_inmueble' propiedad_arrendada.inmueble.pk %}" class="btn btn-dark btn-sm fw-bold rounded-pill">Ver detalles de la propiedad</a>
+            </div>
+          {% else %}
+            <div class="text-center py-4 bg-light rounded-4 border">
+              <i class="bi bi-house-slash display-5 text-muted mb-2"></i>
+              <p class="text-muted mb-0">Aún no tienes ninguna propiedad con arriendo aceptado.</p>
+            </div>
+          {% endif %}
+        </div>
+
+        <!-- SECCIÓN ARRENDATARIO: Mis Solicitudes Enviadas -->
+        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+          <h4 class="fw-bold text-dark mb-3"><i class="bi bi-send-check me-2 text-primary"></i> Mis Solicitudes Enviadas</h4>
+          
+          <div class="table-responsive">
+            <table class="table align-middle">
+              <thead class="table-light">
+                <tr>
+                  <th>Inmueble</th>
+                  <th>Fecha</th>
+                  <th>Estado</th>
+                </tr>
+              </thead>
+                <tbody>
+                    {% for sol in mis_solicitudes %}
+                    <tr>
+                        <td class="fw-bold">{{ sol.inmueble.nombre }}</td>
+                        <!-- Cambiado de fecha_creacion a fecha_solicitud -->
+                        <td>{{ sol.fecha_solicitud|date:"d/m/Y H:i" }}</td>
+                        <td>
+                            <span
+                                class="badge {% if sol.estado == 'aceptada' %}bg-success{% elif sol.estado == 'rechazada' %}bg-danger{% else %}bg-warning text-dark{% endif %}">
+                                {{ sol.estado|title }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="3" class="text-center text-muted py-4">No has enviado ninguna solicitud de arriendo todavía.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+          </div>
+        </div>
+
+      {% endif %}
+
+    </div>
+
+  </div>
+</div>
+{% endblock %}

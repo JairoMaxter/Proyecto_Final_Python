@@ -1,0 +1,62 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top shadow-sm">
+  <div class="container">
+    <a class="navbar-brand fw-bold text-warning" href="{% url 'gestion_inmuebles:index' %}">
+      <i class="bi bi-house-door-fill me-1"></i> Inmuebles Chile
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    
+    <div class="collapse navbar-collapse" id="navbarMain">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link text-white" href="{% url 'gestion_inmuebles:index' %}">Inicio</a>
+        </li>
+        {% if user.is_authenticated %}
+        <li class="nav-item">
+          <a class="nav-link text-white" href="{% url 'gestion_inmuebles:perfil' %}">Mi Perfil</a>
+        </li>
+                <li class="nav-item">
+          <a class="nav-link text-white" href="{% url 'gestion_inmuebles:dashboard' %}">Mi Panel</a>
+        </li>
+        {% endif %}
+      </ul>
+
+      <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center">
+        {% if user.is_authenticated %}
+          <li class="nav-item me-2">
+            <span class="navbar-text text-light small">
+              <i class="bi bi-person-circle me-1"></i> Hola, <strong>{{ user.first_name|default:user.username }}</strong>
+            </span>
+          </li>
+          {% if user.is_staff %}
+          <li class="nav-item me-2">
+            <a class="btn btn-outline-warning btn-sm" href="/admin/" target="_blank">
+              <i class="bi bi-gear-fill"></i> Admin
+            </a>
+          </li>
+          {% endif %}
+          <li class="nav-item">
+            <form method="post" action="{% url 'gestion_inmuebles:logout' %}" class="d-inline">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-outline-danger btn-sm">
+                <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+              </button>
+            </form>
+          </li>
+        {% else %}
+          <li class="nav-item me-2">
+            <a class="btn btn-outline-light btn-sm" href="{% url 'gestion_inmuebles:login' %}">
+              <i class="bi bi-box-arrow-in-right"></i> Iniciar Sesión
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="btn btn-warning btn-sm fw-semibold" href="{% url 'gestion_inmuebles:register' %}">
+              <i class="bi bi-person-plus-fill"></i> Registrarse
+            </a>
+          </li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>

@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+
+            <!-- ========== CONFIRMACIÓN DE ELIMINACIÓN ========== -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <h1 class="h4 mb-3">Eliminar inmueble</h1>
+                    <p>
+                        Vas a eliminar <strong>{{ inmueble.nombre }}</strong>
+                        ({{ inmueble.direccion }}, {{ inmueble.comuna.nombre }}).
+                    </p>
+                    <p class="text-muted">
+                        También se borrarán las solicitudes de arriendo asociadas y no podrás deshacerlo.
+                        Si solo quieres dejar de recibir solicitudes, edita el inmueble y desmarca «Disponible».
+                    </p>
+                    <form method="post" class="d-flex justify-content-end gap-2">
+                        {% csrf_token %}
+                        <a href="{% url 'gestion_inmuebles:dashboard' %}" class="btn btn-outline-secondary">Cancelar</a>
+                        <button type="submit" class="btn btn-danger">Eliminar inmueble</button>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

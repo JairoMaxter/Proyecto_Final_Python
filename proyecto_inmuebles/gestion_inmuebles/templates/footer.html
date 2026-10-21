@@ -1,0 +1,37 @@
+<footer class="bg-dark text-white pt-4 pb-3 mt-auto border-top border-secondary">
+  <div class="container">
+    <div class="row gy-3">
+      <div class="col-md-6">
+        <h5 class="text-warning fw-bold"><i class="bi bi-house-door-fill"></i> Inmuebles Chile</h5>
+        <p class="small text-muted mb-0">
+          Plataforma para la gestión y arriendo de propiedades en todas las regiones y comunas del país.
+        </p>
+      </div>
+      <div class="col-md-3">
+        <h6 class="text-uppercase fw-bold text-light">Enlaces Rápidos</h6>
+        <ul class="list-unstyled small mb-0">
+          <li><a href="{% url 'gestion_inmuebles:index' %}" class="text-decoration-none text-muted">Inicio</a></li>
+          {% if user.is_authenticated %}
+            <li><a href="{% url 'gestion_inmuebles:dashboard' %}" class="text-decoration-none text-muted">Mi Dashboard</a></li>
+          {% else %}
+            <li><a href="{% url 'gestion_inmuebles:login' %}" class="text-decoration-none text-muted">Ingresar</a></li>
+            <li><a href="{% url 'gestion_inmuebles:register' %}" class="text-decoration-none text-muted">Crear cuenta</a></li>
+          {% endif %}
+        </ul>
+      </div>
+      <div class="col-md-3">
+        <h6 class="text-uppercase fw-bold text-light">Contacto</h6>
+        <p class="small text-muted mb-0">
+          <i class="bi bi-envelope me-1"></i> contacto@inmuebleschile.cl<br>
+          <i class="bi bi-geo-alt me-1"></i> Santiago, Chile
+        </p>
+      </div>
+    </div>
+    <hr class="my-3 border-secondary">
+    <div class="row align-items-center">
+      <div class="col-md-12 text-center text-muted small">
+        &copy; 2026 Inmuebles Chile. Todos los derechos reservados.
+      </div>
+    </div>
+  </div>
+</footer>

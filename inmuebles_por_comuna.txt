@@ -1,0 +1,124 @@
+==================================================
+   LISTADO DE INMUEBLES EN ARRIENDO POR COMUNA   
+==================================================
+
+COMUNA: ALTO DEL CARMEN
+----------------------------------------
+  1. Nombre: Casa Residencial Alto del Carmen
+     Descripción: Hermosa propiedad residencial en zona sur.
+
+
+COMUNA: ALTO HOSPICIO
+----------------------------------------
+  1. Nombre: Departamento Alto Hospicio
+     Descripción: Depto con piscina y áreas verdes cercano al mar.
+
+
+COMUNA: ANTOFAGASTA
+----------------------------------------
+  1. Nombre: Departamento Antofagasta
+     Descripción: Alto estándar, vista despejada a la cordillera.
+
+
+COMUNA: ARICA
+----------------------------------------
+  1. Nombre: Departamento Central Arica
+     Descripción: Luminoso departamento amoblado en el centro.
+
+
+COMUNA: CALDERA
+----------------------------------------
+  1. Nombre: Departamento Caldera
+     Descripción: Cercano a universidades y servicios centrales.
+
+
+COMUNA: CAMARONES
+----------------------------------------
+  1. Nombre: Casa Vista al Mar Camarones
+     Descripción: Hermosa casa frente al sector Cavancha.
+
+
+COMUNA: CAMIÑA
+----------------------------------------
+  1. Nombre: Loft Camiña
+     Descripción: Loft con estilo patrimonial y hermosa vista.
+
+
+COMUNA: CHAÑARAL
+----------------------------------------
+  1. Nombre: Casa Residencial Chañaral
+     Descripción: Barrio tranquilo sector Avenida Alemania.
+
+
+COMUNA: COLCHANE
+----------------------------------------
+  1. Nombre: Departamento Colchane
+     Descripción: A pasos de la playa y comercio principal.
+
+
+COMUNA: GENERAL LAGOS
+----------------------------------------
+  1. Nombre: Bodega Industrial General Lagos
+     Descripción: Amplia bodega apta para acopio minero.
+
+
+COMUNA: HUARA
+----------------------------------------
+  1. Nombre: Casa Quinta Huara
+     Descripción: Gran terreno con árboles frutales y tranquilidad.
+
+
+COMUNA: HUASCO
+----------------------------------------
+  1. Nombre: Departamento Huasco
+     Descripción: Departamento calefaccionado con termo panel.
+
+
+COMUNA: IQUIQUE
+----------------------------------------
+  1. Nombre: Casa Familiar Iquique
+     Descripción: Casa acogedora en sector residencial.
+
+
+COMUNA: MARÍA ELENA
+----------------------------------------
+  1. Nombre: Parcela de Agrado María Elena
+     Descripción: Parcela de 5000 m2 con hermosa casa patronal.
+
+
+COMUNA: MEJILLONES
+----------------------------------------
+  1. Nombre: Oficina Mejillones
+     Descripción: Planta libre sector Pedro de Valdivia.
+
+
+COMUNA: PICA
+----------------------------------------
+  1. Nombre: Studio Pica
+     Descripción: Ideal estudiantes, excelente conectividad de Metro.
+
+
+COMUNA: POZO ALMONTE
+----------------------------------------
+  1. Nombre: Local Comercial Pozo Almonte
+     Descripción: Excelente vitrina comercial en zona céntrica.
+
+
+COMUNA: PUTRE
+----------------------------------------
+  1. Nombre: Oficina Comercial Putre
+     Descripción: Oficina ejecutiva sector centro norte.
+
+
+COMUNA: SIERRA GORDA
+----------------------------------------
+  1. Nombre: Departamento Sierra Gorda
+     Descripción: Excelente conectividad y vida de barrio.
+
+
+COMUNA: TOCOPILLA
+----------------------------------------
+  1. Nombre: Casa en Condominio Tocopilla
+     Descripción: Seguridad 24/7 y áreas verdes comunes.
+
+

@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container my-5">
+
+    <!-- ========== NAVEGACIÓN ========== -->
+    <div class="mb-4">
+        <a href="{% url 'gestion_inmuebles:dashboard' %}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left" aria-hidden="true"></i> Volver al panel
+        </a>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <h1 class="h2 mb-4">{{ titulo }}</h1>
+
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+
+                    <!-- ========== FORMULARIO ========== -->
+                    <form method="post">
+                        {% csrf_token %}
+
+                        {% if form.non_field_errors %}
+                        <div class="alert alert-danger" role="alert">
+                            {% for error in form.non_field_errors %}<div>{{ error }}</div>{% endfor %}
+                        </div>
+                        {% endif %}
+
+                        <div class="row g-3">
+                            {% for field in form %}
+
+                            {% if field.name == 'disponible' %}
+                            <!-- Disponibilidad -->
+                            <div class="col-12">
+                                <div class="form-check form-switch">
+                                    {{ field }}
+                                    <label class="form-check-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                </div>
+                                <div class="form-text">Si lo desmarcas, el inmueble deja de aparecer en el catálogo.</div>
+                                {% for error in field.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}
+                            </div>
+
+                            {% else %}
+                            <!-- Campo: {{ field.label }} -->
+                            <div class="{% if field.name == 'nombre' or field.name == 'descripcion' or field.name == 'direccion' %}col-12{% elif field.name == 'estacionamientos' or field.name == 'habitaciones' or field.name == 'banos' %}col-md-4{% else %}col-md-6{% endif %}">
+                                <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                                {{ field }}
+                                {% if field.help_text %}<div class="form-text">{{ field.help_text }}</div>{% endif %}
+                                {% for error in field.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}
+                            </div>
+                            {% endif %}
+
+                            {% endfor %}
+                        </div>
+
+                        <!-- ========== ACCIONES ========== -->
+                        <div class="d-flex justify-content-end gap-2 mt-4">
+                            <a href="{% url 'gestion_inmuebles:dashboard' %}" class="btn btn-outline-secondary">Cancelar</a>
+                            <button type="submit" class="btn btn-primary">
+                                {% if form.instance.pk %}Guardar cambios{% else %}Publicar inmueble{% endif %}
+                            </button>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    <!-- ========== SCRIPT: COMUNAS SEGÚN LA REGIÓN ========== -->
+    <script>
+        (function () {
+            const region = document.getElementById('{{ form.region.id_for_label }}');
+            const comuna = document.getElementById('{{ form.comuna.id_for_label }}');
+            if (!region || !comuna) return;
+
+            // Se guardan todas las comunas una sola vez y, al cambiar la región, se vuelven a armar
+            // las opciones (ocultarlas con "hidden" no funciona en todos los navegadores).
+            const opciones = Array.from(comuna.options);
+            const vacia = opciones.find(function (o) { return o.value === ''; });
+            const comunas = opciones.filter(function (o) { return o.value !== ''; });
+
+            function filtrar() {
+                const elegida = comuna.value;
+                comuna.innerHTML = '';
+                if (vacia) {
+                    vacia.textContent = region.value ? 'Selecciona una comuna' : 'Primero elige una región';
+                    comuna.appendChild(vacia);
+                }
+                comunas.forEach(function (o) {
+                    if (o.dataset.region === region.value) comuna.appendChild(o);
+                });
+                // Se conserva la comuna elegida solo si pertenece a la región actual
+                const sigueDisponible = Array.from(comuna.options).some(function (o) { return o.value === elegida; });
+                comuna.value = sigueDisponible ? elegida : '';
+                comuna.disabled = !region.value;
+            }
+
+            region.addEventListener('change', filtrar);
+            filtrar();
+        })();
+    </script>
+{% endblock %}

@@ -16,7 +16,7 @@ Me apasiona el desarrollo de soluciones tecnológicas eficientes, el diseño de 
 
 ### 🌐 Conectemos
 
-* 🔗 LinkedIn: [Perfil Profesional](https://www.linkedin.com/)
+* 🔗 LinkedIn: [Perfil Profesional]([https://www.linkedin.com/](https://www.linkedin.com/in/ingeniero-jairo-manuel-rodriguez-velasquez/))
 
 * 🐙 GitHub: [@JairoMaxter](https://github.com/JairoMaxter)
 
